@@ -20,7 +20,7 @@ public class Reminder {
 
     public void insert(JdbcTemplate template) {
         template.update("insert into reminders (username,type,time,message) values (?,?,?,?)", user, type, time, message);
-        template.query();
+//        template.query();
     }
 
 }

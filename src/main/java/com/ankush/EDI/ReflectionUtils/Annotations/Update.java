@@ -11,4 +11,6 @@ import java.lang.annotation.Target;
 public @interface Update {
     public String stmt() default "";
 
+    public String col() default "";
+
 }

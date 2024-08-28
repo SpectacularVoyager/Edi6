@@ -7,9 +7,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface SQLSelect {
-    public String stmt() default "";
-
-    public String col() default "";
-
+public @interface Ignore {
 }

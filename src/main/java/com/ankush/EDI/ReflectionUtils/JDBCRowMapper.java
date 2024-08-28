@@ -1,9 +1,7 @@
 package com.ankush.EDI.ReflectionUtils;
 
-import com.ankush.EDI.ReflectionUtils.Annotations.SQLSelect;
+import com.ankush.EDI.ReflectionUtils.Annotations.Select;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowCountCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.lang.reflect.Constructor;
@@ -15,26 +13,55 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RowMapperJdbc<T> extends SqlJDBCObject<SQLSelect> implements RowMapper<T> {
+public class JDBCRowMapper<T> extends JDBCGeneric<Select> implements RowMapper<T> {
 
     Map<String, Field> map;
     Constructor<T> constructor;
 
-    public RowMapperJdbc(Class<T> clazz, JdbcTemplate template) throws NoSuchMethodException {
+    public JDBCRowMapper(Class<T> clazz, JdbcTemplate template, boolean includeUnAnnotated) {
         super(clazz, template);
-        constructor = clazz.getConstructor();
+        if (includeUnAnnotated)
+            init(clazz, getFields().toList());
+        else
+            init(clazz, getFields(Select.class));
     }
 
-    void init(List<Field> fields) {
+    public JDBCRowMapper(Class<T> clazz, JdbcTemplate template, String val) {
+        super(clazz, template);
+        init(clazz, getFields(Select.class, x -> x.col().equals(val)));
+    }
+
+
+    public JDBCRowMapper(Class<T> clazz, JdbcTemplate template) {
+        this(clazz, template, true);
+    }
+
+
+    void init(Class<T> clazz, List<Field> fields) {
+
+        try {
+            constructor = clazz.getConstructor();
+        } catch (NoSuchMethodException e) {
+
+            throw new RuntimeException(String.format("NO DEFAULT CONSTRUCTOR FOR %s FOUND", clazz.getName()), e);
+        }
+
         map = new LinkedHashMap<>();
         for (Field f : fields) {
-            map.put(PresentOr(f.getAnnotation(SQLSelect.class).col(), f.getName()), f);
+            String name = f.getName();
+            Select s = f.getAnnotation(Select.class);
+            if (s != null) {
+                name = PresentOr(s.col(), f.getName());
+            }
+            map.put(name, f);
         }
+
         try {
             constructor.newInstance();
-        } catch (Exception e) {
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     @Override

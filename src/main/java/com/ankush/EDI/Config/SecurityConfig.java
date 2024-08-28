@@ -54,8 +54,9 @@ public class SecurityConfig {
                 .formLogin(Customizer.withDefaults())   //DEFAULT LOGIN FORM
                 .csrf(AbstractHttpConfigurer::disable)  //DISABLE CSRF
                 .authorizeHttpRequests(x -> x
-                        .requestMatchers("/java/api/test/**").permitAll()                                    //TEST API
-                        .requestMatchers("/java/api/auth/**").permitAll()                                    //AUTHENTICATION API
+                        .requestMatchers("/java/api/test/**").permitAll()                                       //TEST API
+                        .requestMatchers("/java/api/auth/**").permitAll()                                       //AUTHENTICATION API
+                        .requestMatchers("/java/api/user/**").hasAnyAuthority("USER")               //AUTHENTICATION API
                         .requestMatchers("/**").hasAnyAuthority("USER")        //ALLOW LOGGED IN
                         .anyRequest().authenticated()
 
