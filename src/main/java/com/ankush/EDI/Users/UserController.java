@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("java/api/user")
+//@RestController
+//@RequestMapping("java/api/user")
 public class UserController {
     @Autowired
     JdbcTemplate template;
