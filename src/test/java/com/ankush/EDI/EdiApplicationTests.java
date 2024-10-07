@@ -1,6 +1,6 @@
 package com.ankush.EDI;
 
-import com.ankush.EDI.ReflectionUtils.JDBCInsert;
+import com.ankush.ReflectionUtils.JDBCInsert;
 import com.ankush.EDI.Test.TestDAO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

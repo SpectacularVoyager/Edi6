@@ -1,8 +1,10 @@
 package com.ankush.EDI.Config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -51,25 +53,43 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain chain(HttpSecurity http, @Autowired UserDetailsManager userDetailsManager, @Autowired AuthenticationManager authenticationManager, @Autowired PasswordEncoder passwordEncoder) throws Exception {
         http
-                .formLogin(Customizer.withDefaults())   //DEFAULT LOGIN FORM
-                .csrf(AbstractHttpConfigurer::disable)  //DISABLE CSRF
-                .authorizeHttpRequests(x -> x
-                        .requestMatchers("/java/api/test/**").permitAll()                                       //TEST API
-                        .requestMatchers("/java/api/auth/**").permitAll()                                       //AUTHENTICATION API
-                        .requestMatchers("/java/api/user/**").hasAnyAuthority("USER")               //AUTHENTICATION API
-                        .requestMatchers("/**").hasAnyAuthority("USER")        //ALLOW LOGGED IN
-                        .anyRequest().authenticated()
-
-                ).exceptionHandling(x -> x
-                        .accessDeniedPage("/forbidden.html")
-                ).logout(x -> {
-                    x.logoutUrl("/java/api/auth/logout").permitAll();
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+//                .formLogin(x -> {
+//                    x.loginPage("/login");
+//                    //                    x.loginPage("http://localhost:3000/login");
+//                    x.loginProcessingUrl("/java/api/auth/login_page");
+//                    x.successHandler((a, b, c) -> {
+//                    });
+//                    x.failureHandler((request, response, exception) -> {
+//                        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+//                        response.getOutputStream().println("Username or password incorrect");
+//                    });
+//                })
+                .formLogin(Customizer.withDefaults())
+                .logout(x -> {
+                    x.logoutUrl("/java/api/user/logout").permitAll();
                     x.logoutSuccessHandler((a, b, c) -> {
+                    });
+                }).httpBasic(x -> {
+                    x.authenticationEntryPoint((request, response, authException) -> {
+                        response.setHeader("WWW-Authenticate", "Authenication Error");
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
                     });
                 }).userDetailsService(userDetailsManager)
                 .authenticationManager(authenticationManager)
+                .authorizeHttpRequests(x -> x
+                                .requestMatchers("/java/api/test/**").permitAll()                                       //TEST API
+                                .requestMatchers("/java/api/auth/**").permitAll()                                       //AUTHENTICATION API
+                                .requestMatchers("/java/api/user/**").hasAnyAuthority("USER")               //AUTHENTICATION API
+                                .requestMatchers("/java/api/userspace/**").hasAnyAuthority("USER")               //AUTHENTICATION API
+                                .requestMatchers("/java/api/auth/login_page").permitAll()
+                                .requestMatchers("/login").permitAll()
 
-                .httpBasic(Customizer.withDefaults())
+//                        .requestMatchers("/**").hasAnyAuthority("USER")        //ALLOW LOGGED IN
+//                        .anyRequest().authenticated()
+
+                );
         ;
 
         return http.build();

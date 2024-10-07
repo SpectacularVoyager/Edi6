@@ -1,4 +1,4 @@
-package com.ankush.EDI.ReflectionUtils.Annotations;
+package com.ankush.ReflectionUtils.Annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

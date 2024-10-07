@@ -1,6 +1,6 @@
-package com.ankush.EDI.ReflectionUtils;
+package com.ankush.ReflectionUtils;
 
-import com.ankush.EDI.ReflectionUtils.Annotations.Select;
+import com.ankush.ReflectionUtils.Annotations.Select;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 

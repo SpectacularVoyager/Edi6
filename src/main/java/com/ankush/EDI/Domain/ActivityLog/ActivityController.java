@@ -1,8 +1,7 @@
 package com.ankush.EDI.Domain.ActivityLog;
 
-import com.ankush.EDI.Domain.Feedback.Feedback;
-import com.ankush.EDI.ReflectionUtils.JDBCInsert;
-import com.ankush.EDI.ReflectionUtils.JDBCRowMapper;
+import com.ankush.ReflectionUtils.JDBCInsert;
+import com.ankush.ReflectionUtils.JDBCRowMapper;
 import com.ankush.EDI.Utils.Utils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

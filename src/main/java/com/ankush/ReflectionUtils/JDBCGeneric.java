@@ -1,6 +1,6 @@
-package com.ankush.EDI.ReflectionUtils;
+package com.ankush.ReflectionUtils;
 
-import com.ankush.EDI.ReflectionUtils.Annotations.Ignore;
+import com.ankush.ReflectionUtils.Annotations.Ignore;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;

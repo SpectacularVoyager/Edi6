@@ -1,7 +1,7 @@
 package com.ankush.EDI;
 
-import com.ankush.EDI.ReflectionUtils.JDBCInsert;
-import com.ankush.EDI.ReflectionUtils.JDBCRowMapper;
+import com.ankush.ReflectionUtils.JDBCInsert;
+import com.ankush.ReflectionUtils.JDBCRowMapper;
 import com.ankush.EDI.Test.TestDAO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

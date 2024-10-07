@@ -1,6 +1,8 @@
 package com.ankush.EDI.Users;
 
 import com.ankush.EDI.Domain.Reminders.Reminder;
+import com.ankush.ReflectionUtils.Annotations.Select;
+import com.ankush.ReflectionUtils.JDBCRowMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -23,28 +25,42 @@ import java.util.List;
 @Component
 @ToString
 public class AuthUser {
+    @Select
     @NotBlank
     private String username;
-
-    @NotBlank
+    @Select
     @Email
     private String email;
-
-
+    @Select
     @NotBlank
     private String name;
-
+    @Select
     @NotNull
     private Date birthdate;
 
     @NotBlank
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+    @Select
+    private String gender;
+    @Select
+    private String bloodgroup;
+    @Select
+    private String data;
 
     List<Reminder> reminders = new ArrayList<>();
 
     public void insertDetails(JdbcTemplate template) {
-        template.update("insert into UserDetails (username,name,email,birthdate) values (?,?,?,?)", username, name, email, birthdate);
+        template.update("insert into UserDetails (username,name,email,birthdate,gender,bloodgroup,data) values (?,?,?,?,?,?,?)", username, name, email, birthdate, gender, bloodgroup, data);
         reminders.forEach(x -> x.insert(template));
+    }
+
+    public void update(JdbcTemplate template) {
+        template.update("update UserDetails  " +
+                "set name=?,email=?,birthdate=?,gender=?,bloodgroup=?,data=? where username=?", name, email, birthdate, gender, bloodgroup, data,username);
+    }
+
+    public static JDBCRowMapper<AuthUser> get(JdbcTemplate template) {
+        return new JDBCRowMapper<>(AuthUser.class, template, false);
     }
 }
