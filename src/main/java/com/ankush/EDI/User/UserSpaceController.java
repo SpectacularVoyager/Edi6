@@ -23,7 +23,7 @@ public class UserSpaceController {
     }
 
     @GetMapping("get")
-    public ResponseEntity<?> get() {
+    public ResponseEntity<AuthUser> get() {
         User u = Utils.getUser();
 
         JDBCRowMapper<AuthUser> mapper = AuthUser.get(template);

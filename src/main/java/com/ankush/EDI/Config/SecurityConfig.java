@@ -1,10 +1,15 @@
 package com.ankush.EDI.Config;
 
+import com.ankush.EDI.User.UserSpaceController;
+import com.ankush.EDI.Users.AuthUser;
+import com.ankush.EDI.Utils.Utils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -12,6 +17,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -26,6 +32,9 @@ import javax.sql.DataSource;
 @EnableWebSecurity      //ENABLE SECURITY
 @EnableJdbcHttpSession  //ENABLE JDBC SESSIONS
 public class SecurityConfig {
+    @Autowired
+    UserSpaceController controller;
+
     @Bean
     public PasswordEncoder getEncoder() {
         return new BCryptPasswordEncoder();
@@ -55,18 +64,28 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
-//                .formLogin(x -> {
-//                    x.loginPage("/login");
-//                    //                    x.loginPage("http://localhost:3000/login");
-//                    x.loginProcessingUrl("/java/api/auth/login_page");
-//                    x.successHandler((a, b, c) -> {
-//                    });
-//                    x.failureHandler((request, response, exception) -> {
-//                        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-//                        response.getOutputStream().println("Username or password incorrect");
-//                    });
-//                })
-                .formLogin(Customizer.withDefaults())
+                //SEND AS FORM DATA
+
+                .formLogin(x -> {
+                    x.loginPage("/login");
+                    //                    x.loginPage("http://localhost:3000/login");
+                    x.loginProcessingUrl("/java/api/auth/login_page");
+                    x.successHandler((request, response, exception) -> {
+                        response.setStatus(200);
+//                        User user = Utils.getUser();
+                        AuthUser authUser = controller.get().getBody();
+                        // Convert to JSON and write to response
+                        ObjectMapper mapper = new ObjectMapper();
+                        String jsonResponse = mapper.writeValueAsString(authUser);
+                        response.setContentType("application/json");
+                        response.getOutputStream().println(jsonResponse);
+                    });
+                    x.failureHandler((request, response, exception) -> {
+                        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                        response.getOutputStream().println("Username or password incorrect");
+                    });
+                })
+//                .formLogin(Customizer.withDefaults())
                 .logout(x -> {
                     x.logoutUrl("/java/api/user/logout").permitAll();
                     x.logoutSuccessHandler((a, b, c) -> {
