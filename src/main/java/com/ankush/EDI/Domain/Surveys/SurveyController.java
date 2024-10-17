@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("java/api/survey")
+@RequestMapping("java/api/user/survey")
 public class SurveyController {
     JdbcTemplate template;
 
@@ -28,6 +28,8 @@ public class SurveyController {
         this.template = template;
         insert = new JDBCInsert<>("surveys", Survey.class, template);
         answerInsert = new JDBCInsert<>("survey_answers", SurveyAnswer.class, template);
+        mapper=new JDBCRowMapper<>(Survey.class,template);
+        answerMapper=new JDBCRowMapper<>(SurveyAnswer.class,template);
     }
 
     @PostMapping("post")
@@ -47,7 +49,7 @@ public class SurveyController {
 
     }
 
-    @GetMapping("getall")
+    @GetMapping("getAll")
     public ResponseEntity<?> getAll() {
         User user = Utils.getUser();
         List<Survey> s = template.query("select * from surveys where userid=?", mapper, user.getUsername());
