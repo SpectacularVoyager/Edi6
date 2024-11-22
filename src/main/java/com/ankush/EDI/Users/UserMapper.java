@@ -16,6 +16,9 @@ public class UserMapper implements RowMapper<AuthUser> {
         user.setBirthdate(rs.getDate("birthdate"));
         user.setUsername(rs.getString("username"));
         user.setName(rs.getString("name"));
+        user.setCurrentChallenges(rs.getString("currentChallenges"));
+        user.setPreviousChallenges(rs.getString("previousChallenges"));
+        user.setHasConsented(rs.getBoolean("hasConsented"));
         return user;
     }
 }

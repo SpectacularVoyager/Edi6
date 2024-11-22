@@ -47,17 +47,24 @@ public class AuthUser {
     private String bloodgroup;
     @Select
     private String data;
+    @Select
+    private boolean hasConsented;
+    @Select
+    private String previousChallenges;
+    @Select
+    private String currentChallenges;
+
 
     List<Reminder> reminders = new ArrayList<>();
 
     public void insertDetails(JdbcTemplate template) {
-        template.update("insert into UserDetails (username,name,email,birthdate,gender,bloodgroup,data) values (?,?,?,?,?,?,?)", username, name, email, birthdate, gender, bloodgroup, data);
+        template.update("insert into UserDetails (username,name,email,birthdate,gender,bloodgroup,data,hasConsented,previousChallenges,currentChallenges) values (?,?,?,?,?,?,?)", username, name, email, birthdate, gender, bloodgroup, data, hasConsented, previousChallenges, currentChallenges);
         reminders.forEach(x -> x.insert(template));
     }
 
     public void update(JdbcTemplate template) {
         template.update("update UserDetails  " +
-                "set name=?,email=?,birthdate=?,gender=?,bloodgroup=?,data=? where username=?", name, email, birthdate, gender, bloodgroup, data,username);
+                "set name=?,email=?,birthdate=?,gender=?,bloodgroup=?,data=?,hasConsented=?,previousChallenges=?,currentChallenges=? where username=?", name, email, birthdate, gender, bloodgroup, data, username, hasConsented, previousChallenges, currentChallenges);
     }
 
     public static JDBCRowMapper<AuthUser> get(JdbcTemplate template) {
