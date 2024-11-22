@@ -30,6 +30,7 @@ public class SurveyController {
             s.setSurveyID(rs.getInt("surveyID"));
             s.setAnswers(Arrays.stream(rs.getString("answers").split(",")).map(Integer::parseInt).toList());
             s.setTimestamp(rs.getTimestamp("timestamp"));
+            s.setType(rs.getString("type"));
             return s;
         };
     }

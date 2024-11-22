@@ -29,6 +29,7 @@ public class Survey {
     List<Integer> answers;
     int score;
     Timestamp timestamp;
+    String type;
 
     public void compute(String userid, boolean time) {
         if (time)
@@ -40,10 +41,11 @@ public class Survey {
     public void insert(JdbcTemplate template) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update((con) -> {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO surveys (answers,userid,timestamp) values(?,?,?)", Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = con.prepareStatement("INSERT INTO surveys (answers,userid,timestamp,type) values(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, answers.stream().map(String::valueOf).collect(Collectors.joining(",")));
             ps.setString(2, userid);
             ps.setTimestamp(3, timestamp);
+            ps.setString(4, type);
             return ps;
         }, keyHolder);
         this.surveyID = keyHolder.getKey().intValue();
